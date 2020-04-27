@@ -2,7 +2,6 @@
 #include <pthread.h>
 #include <fstream>
 #include <cstring>
-#include <signal.h>
 #include <unistd.h>
 
 using namespace std;
@@ -126,7 +125,10 @@ int main() {
 	cin >>  filename;
 	infile.open(filename);
 
-	if (!infile) cerr << "Unable to open the file " + filename;
+	if (!infile) {
+		cerr << "Unable to open the file " + filename + "\n";
+		exit(0);
+	}
 
 	int cntline = 0;
 	while (getline(infile, line)) {
