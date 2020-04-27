@@ -26,22 +26,18 @@ struct Car {
 };
 
 // function to get the special chacater separated value with the help of index
-string entry(string str, int idx, char ch) {
+string entry(string str, int idx) {
 	str += '\0';
 	string value = "";
-	int countSpace = 0;
-	int i = 0;
+	int countValue = 0;
 	for (int i = 0; i < str.length(); i++) {
-		if (idx == countSpace - 1) break;
-		if (str[i] == ch) {
-			countSpace++;
-			if (idx == countSpace - 1) {
-				break;
-			} else {
-				value = "";
-			}
-		} else value += str[i];
-
+		if (str[i] != ' ' && str[i] != '	') {
+			countValue++;
+			value += str[i];
+		} else {
+			value = "";
+		}
+		if (idx == countValue - 1) break;
 	}
 	return value;
 } // entry
@@ -55,6 +51,7 @@ void *carNB(void *arg) {
 
 	if (!(curNCarsInTunnel < maxNCarsInTunnel && curNNBCarsInTunnel < maxNNBCarsInTunnel)) {
 		totwaitNCars++;
+		cout << "-- Northbound car # " << car -> carNo << " has to wait." << endl;
 		while (!(curNCarsInTunnel < maxNCarsInTunnel && curNNBCarsInTunnel < maxNNBCarsInTunnel)) {
 			pthread_cond_wait(&wake_up, &car_lock);
 		}
@@ -90,6 +87,7 @@ void *carSB(void *arg) {
 
 	if (!(curNCarsInTunnel < maxNCarsInTunnel && curNSBCarsInTunnel < maxNSBCarsInTunnel)) {
 		totwaitNCars++;
+		cout << "-- Southbound car # " << car -> carNo << " has to wait." << endl;
 		while (!(curNCarsInTunnel < maxNCarsInTunnel && curNSBCarsInTunnel < maxNSBCarsInTunnel)) {
 			pthread_cond_wait(&wake_up, &car_lock);
 		}
@@ -151,8 +149,8 @@ int main() {
 	maxNSBCarsInTunnel = stoi(input[2]);
 
 	cout << "Maximum number of cars in the tunnel: " << maxNCarsInTunnel << endl;
-	cout << "Maximum number of northbound cars: " << maxNNBCarsInTunnel << endl;
-	cout << "Maximum number of southbound cars: " << maxNSBCarsInTunnel << endl;
+	cout << "Maximum number of northbound cars in the tunnel: " << maxNNBCarsInTunnel << endl;
+	cout << "Maximum number of southbound cars in the tunnel: " << maxNSBCarsInTunnel << endl;
 
 	string direction = "";
 
@@ -168,11 +166,11 @@ int main() {
 		struct Car *car = new struct Car;
 		int timeDelay = 0;
 
-		direction = entry(input[i], 1, ' ');
-		timeDelay = stoi(entry(input[i], 0, ' '));
+		direction = entry(input[i], 1);
+		timeDelay = stoi(entry(input[i], 0));
 		sleep(timeDelay);
 
-		car -> travelTime = stoi(entry(input[i], 2, ' '));
+		car -> travelTime = stoi(entry(input[i], 2));
 
 		if (direction == "N") {
 			car -> carNo = NBCarNo++;
